@@ -1,2 +1,6 @@
 # ntunhs_libnewbook_crawler_python
 用python爬北護基本的新書通告，目前還在很基礎的階段
+用了什麼東西
+re
+Beautifulsoup
+Selenium
