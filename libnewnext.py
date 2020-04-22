@@ -31,9 +31,10 @@ class AppDynamicsJob(unittest.TestCase):
         driver = self.driver
         driver.get("http://140.131.94.8/")
         driver.find_element_by_link_text(u"新書通告").click()
-        driver.find_element_by_link_text(u"新書通告 - 總館").click()
+        sp_or_xm = "總館"
+        driver.find_element_by_link_text(u"新書通告 - "+sp_or_xm).click()
         year = 2020
-        month = 4
+        month = 3
         driver.find_element_by_link_text(u"新書-"+str(year)+"年").click()
         driver.find_element_by_link_text(u"新書-"+str(year)+"年 "+str(month)+"月份").click()
         driver.find_element_by_link_text(u"新書-"+str(year)+"年 "+str(month)+"月份中文書").click()
@@ -63,8 +64,9 @@ class AppDynamicsJob(unittest.TestCase):
                     #print(list.a.text.strip())
                 
                 driver.find_element_by_link_text(">>").click()
-            with open('newbooks.json', 'w', encoding='utf-8') as f:
-                json.dump(booklist, f, indent=2, sort_keys=True, ensure_ascii=False)    
+            with open(str(year)+str(month)+sp_or_xm+".json", 'w+', encoding='utf-8') as f:
+                json.dump(booklist, f, indent=2, sort_keys=True, ensure_ascii=False)   
+                print("已寫入資料到"+str(year)+str(month)+sp_or_xm+".json，ㄅㄅ") 
         
     def is_element_present(self, how, what):
         try: self.driver.find_element(by=how, value=what)
