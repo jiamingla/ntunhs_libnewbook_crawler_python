@@ -33,34 +33,38 @@ class AppDynamicsJob(unittest.TestCase):
         driver.find_element_by_link_text(u"新書通告").click()
         driver.find_element_by_link_text(u"新書通告 - 總館").click()
         year = 2020
-        month = 3
+        month = 4
         driver.find_element_by_link_text(u"新書-"+str(year)+"年").click()
         driver.find_element_by_link_text(u"新書-"+str(year)+"年 "+str(month)+"月份").click()
         driver.find_element_by_link_text(u"新書-"+str(year)+"年 "+str(month)+"月份中文書").click()
         html = driver.page_source
         soup = BeautifulSoup(html, features='lxml')
-        searchnum = soup.find('div', {"class": 'searchsummary'})
-        em = searchnum.find_all('em')              # use searchnum as a parent
-        for d in em:
-            print('共{:s}筆資料'.format(d.get_text()))
-        pagenum = math.ceil(int(d.get_text()) / 20)
         
-        booklist = []
-
-        for i in range(pagenum) :
-            print('第{:d}頁'.format(i+1))
-            html = driver.page_source
-            soup = BeautifulSoup(html, features='lxml')
-            hit_list = soup.find_all('li','hit_list_item_info')
-            for list in hit_list:
-                #print([s for s in list.stripped_strings])#這是有全部資料的
-                booklist.append([s for s in list.stripped_strings])
-                print([s for s in list.stripped_strings][1])#這是只有書名的
-                #print(list.a.text.strip())
+        if soup.find('strong').text == "沒有館藏":
+            print(str(year)+"年 "+str(month)+"月沒有館藏")
+        else:
+            searchnum = soup.find('div', {"class": 'searchsummary'})
+            em = searchnum.find_all('em')              # use searchnum as a parent
+            for d in em:
+                print('共{:s}筆資料'.format(d.get_text()))
+            pagenum = math.ceil(int(d.get_text()) / 20)
             
-            driver.find_element_by_link_text(">>").click()
-        with open('newbooks.json', 'w', encoding='utf-8') as f:
-            json.dump(booklist, f, indent=2, sort_keys=True, ensure_ascii=False)    
+            booklist = []
+
+            for i in range(pagenum) :
+                print('第{:d}頁'.format(i+1))
+                html = driver.page_source
+                soup = BeautifulSoup(html, features='lxml')
+                hit_list = soup.find_all('li','hit_list_item_info')
+                for list in hit_list:
+                    #print([s for s in list.stripped_strings])#這是有全部資料的
+                    booklist.append([s for s in list.stripped_strings])
+                    #print([s for s in list.stripped_strings][1])#這是只有書名的
+                    #print(list.a.text.strip())
+                
+                driver.find_element_by_link_text(">>").click()
+            with open('newbooks.json', 'w', encoding='utf-8') as f:
+                json.dump(booklist, f, indent=2, sort_keys=True, ensure_ascii=False)    
         
     def is_element_present(self, how, what):
         try: self.driver.find_element(by=how, value=what)
