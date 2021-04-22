@@ -7,10 +7,10 @@ config/database.yml
 /db/*.sqlite3
 # 忽略所有附檔名是 .tmp 的檔案
 *.tmp
+# 當然你要忽略⾃⼰也可以，只是通常不會這麼做
+# .gitignore
 # 上面是課本教的
 # 忽略所有附檔名是 .tmp 的檔案
 *.json
 # 忽略 chromedriver.exe 檔案
 chromedriver.exe
-# 當然你要忽略⾃⼰也可以，只是通常不會這麼做
-# .gitignore
