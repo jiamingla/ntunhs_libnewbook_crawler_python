@@ -39,6 +39,7 @@ class AppDynamicsJob(unittest.TestCase):
         month = datetime_dt.month
         driver.find_element_by_link_text(u"新書-"+str(year)+"年").click()
         driver.find_element_by_link_text(u"新書-"+str(year)+"年 "+str(month)+"月份").click()
+        booklist = []
         driver.find_element_by_link_text(u"新書-"+str(year)+"年 "+str(month)+"月份中文書").click()
         html = driver.page_source
         soup = BeautifulSoup(html, features='html.parser')
@@ -52,8 +53,6 @@ class AppDynamicsJob(unittest.TestCase):
                 print('共{:s}筆資料'.format(d.get_text()))
             pagenum = math.ceil(int(d.get_text()) / 20)
             
-            booklist = []
-
             for i in range(pagenum) :
                 print('第{:d}頁'.format(i+1))
                 html = driver.page_source
@@ -64,12 +63,69 @@ class AppDynamicsJob(unittest.TestCase):
                     booklist.append([s for s in list.stripped_strings])
                     #print([s for s in list.stripped_strings][1])#這是只有書名的
                     #print(list.a.text.strip())
-                
-                driver.find_element_by_link_text(">>").click()
-            with open("ntunhs_libnewbook_crawler_python/"+str(year)+str(month)+sp_or_xm+".json", 'w+', encoding='utf-8') as f:
-                json.dump(booklist, f, indent=2, sort_keys=True, ensure_ascii=False)   
-                print("已寫入資料到"+str(year)+str(month)+sp_or_xm+".json，ㄅㄅ") 
+                if(i == pagenum-1):break
+                if(driver.find_element_by_link_text(">>")):
+                    driver.find_element_by_link_text(">>").click()
+        driver.find_element_by_link_text(u"返回").click()    
+        driver.find_element_by_link_text(u"新書-"+str(year)+"年 "+str(month)+"月份西文書").click()
+        html = driver.page_source
+        soup = BeautifulSoup(html, features='html.parser')
+
+        if soup.find('strong').text == "沒有館藏":
+            print(str(year)+"年 "+str(month)+"月沒有館藏")
+        else:
+            searchnum = soup.find('div', {"class": 'searchsummary'})
+            em = searchnum.find_all('em')              # use searchnum as a parent
+            for d in em:
+                print('共{:s}筆資料'.format(d.get_text()))
+            pagenum = math.ceil(int(d.get_text()) / 20)-1
+            
+            for i in range(pagenum) :
+                print('第{:d}頁'.format(i+1))
+                html = driver.page_source
+                soup = BeautifulSoup(html, features='html.parser')
+                hit_list = soup.find_all('li','hit_list_item_info')
+                for list in hit_list:
+                    #print([s for s in list.stripped_strings])#這是有全部資料的
+                    booklist.append([s for s in list.stripped_strings])
+                    #print([s for s in list.stripped_strings][1])#這是只有書名的
+                    #print(list.a.text.strip())
+                if(i == pagenum-1):break
+                if(driver.find_element_by_link_text(">>")):
+                    driver.find_element_by_link_text(">>").click()
+        driver.find_element_by_link_text(u"返回").click()    
+        driver.find_element_by_link_text(u"新書-"+str(year)+"年"+str(month)+"月份視聽").click()
+        html = driver.page_source
+        soup = BeautifulSoup(html, features='html.parser')
+
+        if soup.find('strong').text == "沒有館藏":
+            print(str(year)+"年 "+str(month)+"月沒有館藏")
+        else:
+            searchnum = soup.find('div', {"class": 'searchsummary'})
+            em = searchnum.find_all('em')              # use searchnum as a parent
+            for d in em:
+                print('共{:s}筆資料'.format(d.get_text()))
+            pagenum = math.ceil(int(d.get_text()) / 20)
+            
+            for i in range(pagenum) :
+                print('第{:d}頁'.format(i+1))
+                html = driver.page_source
+                soup = BeautifulSoup(html, features='html.parser')
+                hit_list = soup.find_all('li','hit_list_item_info')
+                for list in hit_list:
+                    #print([s for s in list.stripped_strings])#這是有全部資料的
+                    booklist.append([s for s in list.stripped_strings])
+                    #print([s for s in list.stripped_strings][1])#這是只有書名的
+                    #print(list.a.text.strip())
+                if(i == pagenum-1):break
+                if(driver.find_element_by_link_text(">>")):
+                    driver.find_element_by_link_text(">>").click()
         
+        driver.close() #關閉瀏覽器
+        with open(str(year)+str(month)+".json", 'w+', encoding='utf-8') as f:
+                json.dump(booklist, f, indent=2, sort_keys=True, ensure_ascii=False)   
+                print("已寫入資料到"+str(year)+str(month)+".json，88") 
+    #下面是當你遇到錯誤時該如何處理的預設事件            
     def is_element_present(self, how, what):
         try: self.driver.find_element(by=how, value=what)
         except NoSuchElementException as e: return False
