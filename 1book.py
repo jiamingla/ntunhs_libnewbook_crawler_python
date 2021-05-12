@@ -13,7 +13,8 @@ import math
 import json
 import sys
 
-Link_to_page_URL = sys.argv[1:] 
+Link_to_page_URL = sys.argv[1:] #直接在run .py時加入"網址"就可以使用了
+
 if (Link_to_page_URL == ""):
     print("未輸入網址")
 class NTUNHSLibCrawler(object):
